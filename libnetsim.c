@@ -28,7 +28,7 @@ int ns_init(char *name)
 	if (!(ns_file = fopen(name, "r")))
 		return NS_FILE_NOT_FOUND;
 
-	if (!(fread(&ns_fhdr, sizeof(struct pcap_file_header), 1, ns_file)))
+	if (!(fread(&ns_fhdr, PCAP_FHDR, 1, ns_file)))
 		return NS_WRONG_FILE;
 
 	printf("0x%08x\n", ns_fhdr.magic);
