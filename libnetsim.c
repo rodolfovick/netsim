@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include <pcap.h>
+#include <stdint.h>
 
 #include "netsim.h"
 
@@ -10,51 +9,42 @@
  * Network simulation using a pcap file.
  */
 
-
 /**
- * Read pcap file, initializing the simulation process.
- * @param a character pointer with the file name.
- * @return an integer with the initialization result.
- */ 
-int ns_init(char *name) 
+ * opens a PCAP file and returs the result.
+ * @param file name string.
+ * @param opened pcap struct pointer.
+ * @return a integer with function result.
+ */
+int netsim_init(char *name, pcap_t **pcap)
 {
-	struct pcap_file_header ns_fhdr; 	///< pcap file header.
-	struct pcap_pkthdr ns_phdr; 		///< pcap packet header.
-	FILE *ns_file = NULL; 			///< working pcap file.
-	// FIXME: just for now
-	char buffer[1526];
-	unsigned int i;
+	char errbuf[PCAP_ERRBUF_SIZE];
 
-	// Try to open file;
-	if (!name)
-		return NS_NAME_ERR;
-
-	if (!(ns_file = fopen(name, "r")))
-		return NS_FILE_NOT_FOUND;
-
-	// Read file header
-	if ((fread(&ns_fhdr, 1, PCAP_FHDR, ns_file)) < PCAP_FHDR)
-		return NS_WRONG_FILE;
-
-	printf("0x%08x\n\n", ns_fhdr.magic);
-
-	// Read all pcap packets headers and packet content
-	while (!feof(ns_file)) {
-		if ((fread(&ns_phdr, 1, PCAP_PHDR, ns_file)) < PCAP_PHDR)
-			return NS_PHDR_READ_ERR;
-
-		if (!PCAP_PKT_SIZE(ns_phdr.caplen)) 
-			return NS_PACKET_SIZE_ERR;
-
-		if ((fread(buffer, 1, ns_phdr.caplen, ns_file)) < ns_phdr.caplen)
-			return NS_PACKET_READ_ERR;
-
-
-		// FIXME: just for now
-		for (i = 0; i < ns_phdr.caplen; i++)
-			printf("%02x", buffer[i]);
-		printf("\n\n");
+	(*pcap) = pcap_open_offline(name, errbuf);
+	if (!(*pcap)) {
+		printf("PCAP open error: %s\n", errbuf);
+		return NS_OPEN_ERR;
 	}
 
 	return NS_OK;
+}
+
+/* Read packet callback */
+void ns_pkt_read(u_char *user, const struct pcap_pkthdr *h, const u_char *pkt) 
+{
+	unsigned int i;
+
+	for (i = 0; i < h->caplen; i++)
+		printf("%02x ", pkt[i]);
+	printf("\n\n");
+}
+
+/**
+ * start the simulation.
+ * @param the opened file pcap struct pointer.
+ * @param a flag to indicate if the test should stop on the end of file or continue forever.
+ * @return a integer with function result.
+ */ 
+int netsim_start(pcap_t *pcap, unsigned char loop)
+{
+	return pcap_dispatch(pcap, 0, ns_pkt_read, NULL);
 }

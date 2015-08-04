@@ -1,24 +1,20 @@
 #ifndef NETSIM_H
 #define NETSIM_H
 
+// PCAP lib
+#include <pcap/pcap.h>
+
 // Return values
-#define NS_OK		 	 0 ///< Success.
-#define NS_NAME_ERR		-1 ///< File name error.
-#define NS_FILE_NOT_FOUND	-2 ///< File not found.
-#define NS_WRONG_FILE		-3 ///< Wrong file type.
-#define NS_PHDR_READ_ERR	-4 ///< Wrong file type.
-#define NS_PACKET_SIZE_ERR	-5 ///< Wrong file type.
-#define NS_PACKET_READ_ERR	-6 ///< Wrong file type.
+#define NS_OK		0
+#define NS_OPEN_ERR	-1
 
 // Macros
-#define PCAP_FHDR sizeof(struct pcap_file_header)
-#define PCAP_PHDR sizeof(struct pcap_pkthdr)
+#define NS_PKT_MAX	1522
 
-#define PKT_MIN 		0
-#define PKT_MAX			1527
-#define PCAP_PKT_SIZE(p) ((p > PKT_MIN) && (p < PKT_MAX))
+// Open a pcap file for reading
+int netsim_init(char *name, pcap_t **pcap);
 
-/* Functions prototypes */
-int ns_init(char *name);
+// Start tranmission (until the end or forever)
+int netsim_start(pcap_t *pcap, unsigned char loop);
 
 #endif /* NETSIM_H */
