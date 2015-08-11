@@ -6,16 +6,19 @@
 int main(int argc, char *argv[]) 
 {
 	int ret = 0;
-	pcap_t *pcap = NULL;
+	netsim_t net;
 
-	if (argc != 2) {
+	if (argc != 3) {
 		printf("Wrong arguments\n");
 		return -100;
 	}
 
-	ret = netsim_init(argv[1], &pcap);
+	ret = netsim_init(argv[1], argv[2], &net);
 	printf("f() -> %d\n", ret);
-	ret = netsim_start(pcap, 0);
+	if (ret < 0) return ret;
+	
+	ret = netsim_start(&net, 0);
 	printf("f() -> %d\n", ret);
+
 	return ret;
 }
