@@ -39,7 +39,6 @@ void ns_pkt_timer(struct timeval t, int reset)
 		gettimeofday(&s, NULL);
 		timersub(&s, &si, &sd);
 	} while (timercmp(&sd, &td, <));
-	printf("%ld.%ld %ld.%ld ", sd.tv_sec, sd.tv_usec, td.tv_sec, td.tv_usec);
 }
 
 struct sockaddr_ll * ns_sockaddr_init(int ifindex) 
@@ -61,6 +60,7 @@ void ns_pkt_read(u_char *user, const struct pcap_pkthdr *h, const u_char *pkt)
 {
 	netsim_t *net = (netsim_t *)user;
 	static struct sockaddr_ll *sa = NULL;
+	int ret;
 
 	ns_pkt_timer(h->ts, net->reset);
 	if (net->reset) 
@@ -69,7 +69,9 @@ void ns_pkt_read(u_char *user, const struct pcap_pkthdr *h, const u_char *pkt)
 	if (!sa)
 		sa = ns_sockaddr_init(net->ifindex);
 
-	sendto(net->fd, pkt, h->caplen, 0, (struct sockaddr *)&sa, sizeof (sa));
+	ret = sendto(net->fd, pkt, h->caplen, 0, (struct sockaddr *)sa, sizeof (struct sockaddr_ll));
+	if (ret < 0)
+		printf("Send error: %s\n", strerror(errno));
 }
 
 /**
@@ -121,7 +123,7 @@ int netsim_init(char *name, char *ifname, netsim_t *net)
 
 	net->pcap = pcap;
 	net->fd = fd;
-	net->ifindex   = ifr.ifr_ifindex;
+	net->ifindex = ifr.ifr_ifindex;
 
 	return NS_OK;
 }
