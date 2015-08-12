@@ -9,16 +9,24 @@ int main(int argc, char *argv[])
 	netsim_t net;
 
 	if (argc != 3) {
-		printf("Wrong arguments\n");
+		printf("Usage:\n");
+		printf("netsim FILE INTERFACE\n");
+		printf("\nFILE      PCAP file name\n");
+		printf("INTERFACE Sending interface name\n");
 		return -100;
 	}
 
 	ret = netsim_init(argv[1], argv[2], &net);
-	printf("f() -> %d\n", ret);
-	if (ret < 0) return ret;
+	if (ret < 0) {
+		printf("Init fail\n");
+		return ret;
+	}
 	
 	ret = netsim_start(&net, 0);
-	printf("f() -> %d\n", ret);
+	if (ret < 0) {
+		printf("Transmission fail\n");
+		return ret;
+	}
 
-	return ret;
+	return 0;
 }
