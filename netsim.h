@@ -26,6 +26,12 @@ typedef struct netsim_s {
 int netsim_init(char *name, char *ifname, netsim_t *net);
 
 // Start tranmission (until the end or forever)
-int netsim_start(netsim_t *net, unsigned char loop);
+int netsim_start(netsim_t *net);
+
+// Finish the software
+int netsim_end(netsim_t *net);
+
+// Restart the PCAP file 
+int netsim_reinit(char *name, netsim_t *net);
 
 #endif /* NETSIM_H */

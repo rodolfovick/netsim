@@ -131,11 +131,33 @@ int netsim_init(char *name, char *ifname, netsim_t *net)
 /**
  * start the simulation.
  * @param the opened file pcap struct pointer.
- * @param a flag to indicate if the test should stop on the end of file or continue forever.
  * @return a integer with function result.
  */ 
-int netsim_start(netsim_t *net, unsigned char loop)
+int netsim_start(netsim_t *net)
 {
 	net->reset = 1;
 	return pcap_dispatch(net->pcap, 0, ns_pkt_read, (u_char *)net);
+}
+
+/**
+ * Reinit the simulation.
+ * @param the opened file pcap struct pointer.
+ * @return a integer with function result.
+ */ 
+int netsim_reinit(char *name, netsim_t *net)
+{
+	pcap_t *pcap;
+	char errbuf[PCAP_ERRBUF_SIZE];
+
+	pcap = net->pcap;
+	pcap_close(pcap);
+
+	pcap = pcap_open_offline(name, errbuf);
+	if (!pcap) {
+		printf("PCAP open error: %s\n", errbuf);
+		return NS_OPEN_ERR;
+	}
+	pcap = net->pcap;
+
+	return NS_OK;
 }
