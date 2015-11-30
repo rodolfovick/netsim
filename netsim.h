@@ -25,7 +25,7 @@ typedef struct netsim_s {
 // Open a pcap file for reading
 int netsim_init(char *name, char *ifname, netsim_t *net);
 
-// Start tranmission (until the end or forever)
+// Start tranmission
 int netsim_start(netsim_t *net);
 
 // Finish the software

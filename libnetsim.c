@@ -69,7 +69,8 @@ void ns_pkt_read(u_char *user, const struct pcap_pkthdr *h, const u_char *pkt)
 	if (!sa)
 		sa = ns_sockaddr_init(net->ifindex);
 
-	ret = sendto(net->fd, pkt, h->caplen, 0, (struct sockaddr *)sa, sizeof (struct sockaddr_ll));
+	ret = sendto(net->fd, pkt, h->caplen, 0, (struct sockaddr *)sa,
+		     sizeof (struct sockaddr_ll));
 	if (ret < 0)
 		printf("Send error: %s\n", strerror(errno));
 }

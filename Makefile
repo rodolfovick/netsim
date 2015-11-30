@@ -1,13 +1,19 @@
+ifdef CROSS_COMPILE
+	CC=$(CROSS_COMPILE)gcc
+else
+	CC=gcc
+endif
+
 all: netsim
 
 libnetsim.o: libnetsim.c netsim.h
-	gcc -o libnetsim.o -c libnetsim.c -D_GNU_SOURCE -W -Wall -std=c99 -pedantic -g
+	$(CC) -o libnetsim.o -c libnetsim.c -D_GNU_SOURCE -W -Wall -std=c99 -pedantic -g
 
 netsim.o: netsim.c netsim.h
-	gcc -o netsim.o -c netsim.c -D_GNU_SOURCE -W -Wall -std=c99 -pedantic -g
+	$(CC) -o netsim.o -c netsim.c -D_GNU_SOURCE -W -Wall -std=c99 -pedantic -g
 
 netsim: netsim.o libnetsim.o
-	gcc -o netsim netsim.o libnetsim.o -lpcap
+	$(CC) -o netsim netsim.o libnetsim.o -lpcap
 
 clean:
 	rm libnetsim.o netsim.o netsim
