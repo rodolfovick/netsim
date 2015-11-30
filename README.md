@@ -1,5 +1,6 @@
 # netsim
 PCAP network simulator. The idea is to send a PCAP file on a choose interface.
+
 Using a network capture file (using tcpdump or wireshark for example), you can simulate any network.
 
 ## Roadmap
@@ -19,6 +20,7 @@ To do:
 
 ## Contact
 Rodolfo Vick
+
 email: rodolfo.vick at gmail.com
 
 
